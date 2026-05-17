@@ -42,7 +42,198 @@
 
 ---
 
-## ৩. আর্কিটেকচার (Architecture)
+## ৩. ক্লিন আর্কিটেকচার (Clean / Modular Architecture)
+
+পুরো codebase **Cargo workspace** হিসেবে multiple crate-এ বিভক্ত থাকবে। প্রতিটা layer-এর একটাই দায়িত্ব (Single Responsibility), এবং dependency শুধু **ভেতরের দিকে** যাবে (Dependency Rule):
+
+```
+            ┌──────────────────────────────┐
+            │     presentation (Leptos)    │  ← UI, routes, components
+            └──────────────┬───────────────┘
+                           │ depends on
+                           ▼
+            ┌──────────────────────────────┐
+            │       application            │  ← use-cases, orchestration
+            └──────────────┬───────────────┘
+                           │ depends on
+                           ▼
+            ┌──────────────────────────────┐
+            │         domain               │  ← entities, traits (ports)
+            └──────────────────────────────┘
+                           ▲
+                           │ implements
+            ┌──────────────┴───────────────┐
+            │      infrastructure          │  ← DB, email, storage adapters
+            └──────────────────────────────┘
+```
+
+### লেয়ার গুলোর দায়িত্ব
+
+| Layer | কী থাকবে | কী থাকবে না |
+|---|---|---|
+| **domain** | Entities (Project, Post, User), Value objects, Repository traits (ports), Domain errors | DB কোড, HTTP, framework |
+| **application** | Use-cases (`CreateProject`, `PublishPost`), DTOs, business rules orchestration | UI, SQL, async runtime |
+| **infrastructure** | SQLx repository impl, Resend email adapter, Cloudinary adapter, JWT impl | UI, business logic |
+| **presentation** | Leptos components, routes, server functions, forms | DB queries, business rules |
+
+### Cargo Workspace Structure
+
+```
+portfolio-rust/
+├── Cargo.toml              # workspace root
+├── crates/
+│   ├── domain/             # Pure Rust, no_std-friendly, zero I/O
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs
+│   │       ├── entities/
+│   │       │   ├── project.rs
+│   │       │   ├── post.rs
+│   │       │   ├── user.rs
+│   │       │   └── message.rs
+│   │       ├── value_objects/
+│   │       │   ├── slug.rs
+│   │       │   ├── email.rs
+│   │       │   └── password.rs
+│   │       ├── ports/                # Traits (repository interfaces)
+│   │       │   ├── project_repo.rs
+│   │       │   ├── post_repo.rs
+│   │       │   ├── user_repo.rs
+│   │       │   ├── image_storage.rs
+│   │       │   └── email_sender.rs
+│   │       └── errors.rs
+│   │
+│   ├── application/        # Use-cases, depends only on `domain`
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs
+│   │       ├── projects/
+│   │       │   ├── create_project.rs
+│   │       │   ├── update_project.rs
+│   │       │   ├── delete_project.rs
+│   │       │   └── list_projects.rs
+│   │       ├── posts/
+│   │       │   ├── publish_post.rs
+│   │       │   └── ...
+│   │       ├── auth/
+│   │       │   ├── login.rs
+│   │       │   └── register_admin.rs
+│   │       ├── contact/
+│   │       │   └── submit_message.rs
+│   │       └── dto.rs
+│   │
+│   ├── infrastructure/     # Implements domain ports
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs
+│   │       ├── db/
+│   │       │   ├── postgres/
+│   │       │   │   ├── project_repo.rs
+│   │       │   │   ├── post_repo.rs
+│   │       │   │   └── ...
+│   │       │   └── migrations/
+│   │       ├── email/
+│   │       │   └── resend.rs
+│   │       ├── storage/
+│   │       │   └── cloudinary.rs
+│   │       ├── auth/
+│   │       │   ├── jwt.rs
+│   │       │   └── argon2_hasher.rs
+│   │       └── config.rs
+│   │
+│   └── presentation/       # Leptos SSR app (Axum)
+│       ├── Cargo.toml
+│       └── src/
+│           ├── main.rs                 # Axum + Leptos bootstrap
+│           ├── app.rs                  # Root component
+│           ├── di.rs                   # Composition root (wire all layers)
+│           ├── server_fns/             # Leptos #[server] fns → call use-cases
+│           │   ├── projects.rs
+│           │   ├── posts.rs
+│           │   └── auth.rs
+│           ├── routes/
+│           │   ├── public/
+│           │   │   ├── home.rs
+│           │   │   ├── about.rs
+│           │   │   ├── projects.rs
+│           │   │   ├── blog.rs
+│           │   │   └── contact.rs
+│           │   └── admin/
+│           │       ├── login.rs
+│           │       ├── dashboard.rs
+│           │       ├── projects_manager.rs
+│           │       ├── blog_manager.rs
+│           │       └── inbox.rs
+│           ├── components/             # Reusable UI atoms/molecules
+│           │   ├── navbar.rs
+│           │   ├── footer.rs
+│           │   ├── project_card.rs
+│           │   ├── markdown_editor.rs
+│           │   └── ...
+│           ├── layouts/
+│           │   ├── public_layout.rs
+│           │   └── admin_layout.rs
+│           └── middleware/
+│               └── auth_guard.rs
+│
+├── style/                  # TailwindCSS source
+│   └── tailwind.css
+├── public/                 # Static assets
+├── tests/
+│   ├── domain/             # Pure unit tests (fast, no I/O)
+│   ├── application/        # Use-case tests with mock repos
+│   └── integration/        # Full SSR + DB tests
+└── PROJECT_PLAN.md
+```
+
+### Dependency Rule (গুরুত্বপূর্ণ!)
+
+```toml
+# crates/domain/Cargo.toml  → NO dependencies on other workspace crates
+[dependencies]
+thiserror = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# crates/application/Cargo.toml
+[dependencies]
+domain = { path = "../domain" }
+async-trait = "0.1"
+
+# crates/infrastructure/Cargo.toml
+[dependencies]
+domain = { path = "../domain" }
+application = { path = "../application" }
+sqlx = { version = "0.8", features = ["postgres", "runtime-tokio"] }
+# ...
+
+# crates/presentation/Cargo.toml
+[dependencies]
+domain = { path = "../domain" }
+application = { path = "../application" }
+infrastructure = { path = "../infrastructure" }
+leptos = { version = "0.7", features = ["ssr"] }
+axum = "0.7"
+```
+
+### ডিজাইন প্যাটার্ন
+
+- **Ports & Adapters (Hexagonal)** — `domain::ports::ProjectRepository` trait, infrastructure এ `SqlxProjectRepository` impl
+- **Dependency Injection** — `presentation/di.rs` এ composition root, `Arc<dyn ProjectRepository>` inject
+- **DTOs vs Entities** — server function-এ DTO, internal logic-এ domain entity
+- **Result-based error handling** — `thiserror` দিয়ে layer-specific error type, `From` impl দিয়ে convert
+- **Builder pattern** — complex entity construction এর জন্য
+- **Repository pattern** — DB access একটাই জায়গায় abstract
+
+### টেস্টিং স্ট্র্যাটেজি
+
+| Test type | কোথায় | Tool |
+|---|---|---|
+| Unit (domain) | `crates/domain/tests/` | Vanilla `#[test]`, no I/O |
+| Use-case | `crates/application/tests/` | Mock repo via `mockall` |
+| Repository integration | `crates/infrastructure/tests/` | `sqlx::test` macro, throwaway DB |
+| E2E | `tests/integration/` | `axum::Router::oneshot` + reqwest |
+
+### ৩.১ Runtime Architecture (Layered View)
 
 ```
 ┌─────────────────────────────────────────────────┐
