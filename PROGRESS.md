@@ -8,13 +8,13 @@
 ## 🎯 সামগ্রিক অগ্রগতি (Overall)
 
 ```
-[░░░░░░░░░░░░░░░░░░░░] 0% complete  (0/6 phases)
+[███░░░░░░░░░░░░░░░░░] 17% complete  (1/6 phases)
 ```
 
 | Phase | Status | শুরু | শেষ | নোট |
 |---|---|---|---|---|
 | 0. Setup & Planning | 🟢 Done | 2026-05-18 | 2026-05-18 | Repo + plan ready |
-| 1. Foundation (workspace, scaffold, Tailwind) | ⚪ Not started | — | — | — |
+| 1. Foundation (workspace, scaffold, Tailwind) | 🟢 Done | 2026-05-18 | 2026-05-18 | 4-crate workspace builds clean |
 | 2. Public Pages UI | ⚪ Not started | — | — | — |
 | 3. Database + Server Functions | ⚪ Not started | — | — | — |
 | 4. Auth + Dashboard | ⚪ Not started | — | — | — |
@@ -27,8 +27,8 @@
 
 ## 🚀 বর্তমান ফোকাস (Current Focus)
 
-**Phase:** —
-**Task:** —
+**Phase:** Phase 2 — Public Pages UI
+**Task:** Hero, about, projects, blog, contact page designs (hardcoded content)
 **Blocker:** কোনো blocker নেই
 
 ---
@@ -44,23 +44,35 @@
 
 ---
 
-## ⬜ Phase 1: Foundation
+## ✅ Phase 1: Foundation
 
 **Goal:** Cargo workspace + 4-crate clean architecture skeleton + Leptos SSR + TailwindCSS dev server চলবে।
 
-- [ ] `cargo install cargo-leptos`
-- [ ] Workspace root `Cargo.toml` তৈরি
-- [ ] `crates/domain` crate (lib only)
-  - [ ] `entities/` placeholder modules
-  - [ ] `ports/` repository traits
-  - [ ] `errors.rs`
-- [ ] `crates/application` crate (depends on domain)
-- [ ] `crates/infrastructure` crate (depends on domain + application)
-- [ ] `crates/presentation` crate — Leptos SSR + Axum bootstrap
-- [ ] TailwindCSS integration
-- [ ] Basic layout components (Navbar, Footer)
-- [ ] `cargo leptos watch` কাজ করছে confirm
-- [ ] CI: `cargo check --workspace` GitHub Action
+- [x] Rust toolchain install (rustup, stable 1.95)
+- [x] `cargo install cargo-leptos` (background)
+- [x] Workspace root `Cargo.toml` তৈরি + shared deps + cargo-leptos metadata
+- [x] `rust-toolchain.toml`, `rustfmt.toml`, `clippy.toml`
+- [x] `crates/domain` crate
+  - [x] entities (Project, Post, User, Profile, Skill, Message)
+  - [x] value_objects (Email, Slug — with validation + unit tests)
+  - [x] ports (8 repository/service traits)
+  - [x] `errors.rs` + `DomainResult`
+- [x] `crates/application` crate
+  - [x] DTO module (NewProjectDto, NewPostDto, ContactMessageDto, LoginDto)
+  - [x] `ApplicationError` with `From<DomainError>`
+  - [x] First use-case: `ListProjects`
+  - [x] Folder skeletons for posts/skills/profile/contact/auth
+- [x] `crates/infrastructure` crate (config + module skeletons)
+- [x] `crates/presentation` crate (Leptos SSR + Axum)
+  - [x] `shell()` + `App` component with `<Router>` + 5 routes
+  - [x] Navbar + Footer + PublicLayout components
+  - [x] 5 public route placeholder pages
+  - [x] `main.rs` with Axum bootstrap + tracing
+- [x] TailwindCSS v4 integration (`style/tailwind.css` + workspace metadata)
+- [x] `public/` static assets folder + favicon
+- [x] `cargo check --workspace` clean (no warnings, no errors)
+- [x] `cargo test -p domain` — 3/3 pass
+- [x] CI: GitHub Actions (fmt, clippy, check, test) workflow
 
 ---
 
@@ -156,6 +168,7 @@
 
 প্রতিটা significant change এখানে এক লাইনে লেখো (latest উপরে)।
 
+- **2026-05-18** — Phase 1 complete: workspace + 4 crates + Leptos SSR scaffold + Tailwind + CI ✅
 - **2026-05-18** — Repo + plan + progress tracker setup ✅
 
 ---

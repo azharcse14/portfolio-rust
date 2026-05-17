@@ -1,0 +1,74 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/domain",
+    "crates/application",
+    "crates/infrastructure",
+    "crates/presentation",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Azharul Islam <mdazharcse14@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/azharcse14/portfolio-rust"
+
+[workspace.dependencies]
+# Shared dependencies (workspace-wide version pinning)
+thiserror = "1.0"
+anyhow = "1.0"
+uuid = { version = "1.10", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+async-trait = "0.1"
+tokio = { version = "1.41", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Internal crates
+domain = { path = "crates/domain" }
+application = { path = "crates/application" }
+infrastructure = { path = "crates/infrastructure" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 1
+
+# cargo-leptos workspace configuration
+[[workspace.metadata.leptos]]
+name = "portfolio"
+bin-package = "presentation"
+lib-package = "presentation"
+
+# Output bundle
+output-name = "portfolio"
+site-root = "target/site"
+site-pkg-dir = "pkg"
+
+# Tailwind (cargo-leptos compiles it via its bundled tailwindcss binary)
+tailwind-input-file = "style/tailwind.css"
+
+# Static assets served at /
+assets-dir = "public"
+
+# Dev server
+site-addr = "127.0.0.1:3000"
+reload-port = 3001
+end2end-cmd = "true"
+end2end-dir = "."
+
+# Features wiring
+bin-features = ["ssr"]
+bin-default-features = false
+lib-features = ["hydrate"]
+lib-default-features = false
+
+browserquery = "defaults"
+env = "DEV"
