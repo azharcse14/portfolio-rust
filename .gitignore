@@ -16,6 +16,12 @@ Cargo.lock.bak
 .env
 .env.local
 
+# Local dev SQLite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
 # Legacy
 .sass-cache/
 node_modules/

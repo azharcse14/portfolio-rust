@@ -12,7 +12,7 @@ impl AppConfig {
     pub fn from_env() -> Self {
         Self {
             database_url: std::env::var("DATABASE_URL")
-                .unwrap_or_else(|_| "sqlite::memory:".into()),
+                .unwrap_or_else(|_| "sqlite://portfolio.db?mode=rwc".into()),
             jwt_secret: std::env::var("JWT_SECRET").unwrap_or_else(|_| "dev-secret".into()),
             resend_api_key: std::env::var("RESEND_API_KEY").ok(),
             cloudinary_url: std::env::var("CLOUDINARY_URL").ok(),

@@ -7,5 +7,7 @@ pub struct Skill {
     pub name: String,
     pub icon: Option<String>,
     pub category: Option<String>,
+    pub percentage: i32,
+    pub color: Option<String>,
     pub display_order: i32,
 }

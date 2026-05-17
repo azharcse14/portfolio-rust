@@ -1,1 +1,3 @@
-// Use-cases for profile editing will live here (Phase 3 & 4).
+pub mod get_profile;
+
+pub use get_profile::GetProfile;

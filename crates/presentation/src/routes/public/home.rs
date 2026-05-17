@@ -1,5 +1,14 @@
 use leptos::prelude::*;
 use leptos_meta::Title;
+use leptos::form::ActionForm;
+
+use crate::server_fns::{
+    contact::SubmitContactMessage,
+    posts::{list_posts, PostView},
+    profile::get_profile,
+    projects::{list_projects, ProjectView},
+    skills::{list_skills, SkillView},
+};
 
 #[component]
 pub fn HomePage() -> impl IntoView {
@@ -23,12 +32,12 @@ pub fn HomePage() -> impl IntoView {
                     <About />
                     <Services />
                     <Counter />
-                    <Skills />
+                    <SkillsSection />
                     <Education />
                     <Experience />
-                    <Work />
-                    <Blog />
-                    <Contact />
+                    <WorkSection />
+                    <BlogSection />
+                    <ContactSection />
                 </div>
             </div>
         </div>
@@ -37,17 +46,27 @@ pub fn HomePage() -> impl IntoView {
 
 #[component]
 fn Aside() -> impl IntoView {
+    let profile = OnceResource::new(async { get_profile().await });
+
     view! {
         <aside id="colorlib-aside" role="complementary" class="border js-fullheight">
             <div class="text-center">
-                <div
-                    class="author-img"
-                    style="background-image: url(/images/about.jpg);"
-                ></div>
-                <h1 id="colorlib-logo"><a href="index.html">"Azharul Islam"</a></h1>
-                <span class="position">
-                    <a href="#">"Full Stack Developer"</a>" in Bangladesh"
-                </span>
+                <Suspense fallback=|| view! {}>
+                    {move || profile.get().map(|res| {
+                        let p = res.unwrap_or_else(|_| default_profile());
+                        let img_style = format!(
+                            "background-image: url({});",
+                            p.photo_url.unwrap_or_else(|| "/images/about.jpg".into())
+                        );
+                        view! {
+                            <div class="author-img" style=img_style></div>
+                            <h1 id="colorlib-logo"><a href="#">{p.name}</a></h1>
+                            <span class="position">
+                                <a href="#">{p.title}</a>" in Bangladesh"
+                            </span>
+                        }
+                    })}
+                </Suspense>
             </div>
             <nav id="colorlib-main-menu" role="navigation" class="navbar">
                 <div id="navbar" class="collapse">
@@ -79,6 +98,19 @@ fn Aside() -> impl IntoView {
                 </ul>
             </div>
         </aside>
+    }
+}
+
+fn default_profile() -> crate::server_fns::profile::ProfileView {
+    crate::server_fns::profile::ProfileView {
+        name: "Azharul Islam".into(),
+        title: "Full Stack Developer".into(),
+        bio: String::new(),
+        photo_url: Some("/images/about.jpg".into()),
+        email: None,
+        github: None,
+        linkedin: None,
+        twitter: None,
     }
 }
 
@@ -136,6 +168,8 @@ fn Hero() -> impl IntoView {
 
 #[component]
 fn About() -> impl IntoView {
+    let profile = OnceResource::new(async { get_profile().await });
+
     view! {
         <section class="colorlib-about" data-section="about">
             <div class="colorlib-narrow-content">
@@ -149,15 +183,12 @@ fn About() -> impl IntoView {
                                 <div class="about-desc">
                                     <span class="heading-meta">"About Me"</span>
                                     <h2 class="colorlib-heading">"Who Am I?"</h2>
-                                    <p>
-                                        <strong>"Hi, I'm Azharul Islam"</strong>
-                                        " — a full stack developer who enjoys building well-architected, fast products. "
-                                        "I work across the stack with Rust, TypeScript, and the boring-but-important parts of software design."
-                                    </p>
-                                    <p>
-                                        "Currently focused on Rust + Leptos for the web, with a soft spot for clean architecture, "
-                                        "fast feedback loops, and software that holds up under maintenance."
-                                    </p>
+                                    <Suspense fallback=|| view! { <p>"Loading…"</p> }>
+                                        {move || profile.get().map(|res| {
+                                            let p = res.unwrap_or_else(|_| default_profile());
+                                            view! { <p>{p.bio}</p> }
+                                        })}
+                                    </Suspense>
                                 </div>
                             </div>
                         </div>
@@ -191,7 +222,7 @@ fn About() -> impl IntoView {
                             <div class="col-md-12 animate-box" data-animate-effect="fadeInLeft">
                                 <div class="hire">
                                     <h2>"I'm available for freelance work " <br /> "and interesting collaborations!"</h2>
-                                    <a href="#" class="btn-hire">"Hire me"</a>
+                                    <a href="#contact" class="btn-hire">"Hire me"</a>
                                 </div>
                             </div>
                         </div>
@@ -299,7 +330,9 @@ fn CounterItem(to: &'static str, label: &'static str) -> impl IntoView {
 }
 
 #[component]
-fn Skills() -> impl IntoView {
+fn SkillsSection() -> impl IntoView {
+    let skills = OnceResource::new(async { list_skills().await });
+
     view! {
         <section class="colorlib-skills" data-section="skills">
             <div class="colorlib-narrow-content">
@@ -319,46 +352,39 @@ fn Skills() -> impl IntoView {
                             "Always learning more — currently going deep on Rust + distributed systems."
                         </p>
                     </div>
-                    <SkillBar name="Rust" color="color-1" pct=85 effect="fadeInLeft" />
-                    <SkillBar name="TypeScript" color="color-2" pct=90 effect="fadeInRight" />
-                    <SkillBar name="Leptos / React" color="color-3" pct=80 effect="fadeInLeft" />
-                    <SkillBar name="TailwindCSS" color="color-4" pct=90 effect="fadeInRight" />
-                    <SkillBar name="Postgres / SQL" color="color-5" pct=75 effect="fadeInLeft" />
-                    <SkillBar name="Docker / DevOps" color="color-6" pct=70 effect="fadeInRight" />
+                    <Suspense fallback=|| view! {}>
+                        {move || skills.get().map(|res| {
+                            let items: Vec<SkillView> = res.unwrap_or_default();
+                            items.into_iter().enumerate().map(|(i, s)| {
+                                let effect = if i % 2 == 0 { "fadeInLeft" } else { "fadeInRight" };
+                                let bar_class = format!("progress-bar {}", s.color);
+                                let style = format!("width:{}%", s.percentage);
+                                let pct_text = format!("{}%", s.percentage);
+                                view! {
+                                    <div class="col-md-6 animate-box" data-animate-effect=effect>
+                                        <div class="progress-wrap">
+                                            <h3>{s.name}</h3>
+                                            <div class="progress">
+                                                <div
+                                                    class=bar_class
+                                                    role="progressbar"
+                                                    aria-valuenow=s.percentage.to_string()
+                                                    aria-valuemin="0"
+                                                    aria-valuemax="100"
+                                                    style=style
+                                                >
+                                                    <span>{pct_text}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }).collect_view()
+                        })}
+                    </Suspense>
                 </div>
             </div>
         </section>
-    }
-}
-
-#[component]
-fn SkillBar(
-    name: &'static str,
-    color: &'static str,
-    pct: u32,
-    effect: &'static str,
-) -> impl IntoView {
-    let bar_class = format!("progress-bar {}", color);
-    let style = format!("width:{}%", pct);
-    let pct_text = format!("{}%", pct);
-    view! {
-        <div class="col-md-6 animate-box" data-animate-effect=effect>
-            <div class="progress-wrap">
-                <h3>{name}</h3>
-                <div class="progress">
-                    <div
-                        class=bar_class
-                        role="progressbar"
-                        aria-valuenow=pct.to_string()
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        style=style
-                    >
-                        <span>{pct_text}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     }
 }
 
@@ -565,7 +591,9 @@ fn TimelineEntry(
 }
 
 #[component]
-fn Work() -> impl IntoView {
+fn WorkSection() -> impl IntoView {
+    let projects = OnceResource::new(async { list_projects(false).await });
+
     view! {
         <section class="colorlib-work" data-section="work">
             <div class="colorlib-narrow-content">
@@ -585,49 +613,46 @@ fn Work() -> impl IntoView {
                     <div class="col-md-12">
                         <p class="work-menu">
                             <span><a href="#" class="active">"All"</a></span>" "
-                            <span><a href="#">"Web"</a></span>" "
-                            <span><a href="#">"Backend"</a></span>" "
-                            <span><a href="#">"CLI"</a></span>
+                            <span><a href="#">"Featured"</a></span>" "
+                            <span><a href="#">"Open Source"</a></span>
                         </p>
                     </div>
                 </div>
                 <div class="row">
-                    <WorkCard
-                        img="/images/img-1.jpg"
-                        title="Portfolio (Rust + Leptos)"
-                        kind="Website"
-                        effect="fadeInLeft"
-                    />
-                    <WorkCard
-                        img="/images/img-2.jpg"
-                        title="Task Tracker"
-                        kind="Web App"
-                        effect="fadeInRight"
-                    />
-                    <WorkCard
-                        img="/images/img-3.jpg"
-                        title="Weather CLI"
-                        kind="Terminal Tool"
-                        effect="fadeInTop"
-                    />
-                    <WorkCard
-                        img="/images/img-4.jpg"
-                        title="Image Optimizer"
-                        kind="Service"
-                        effect="fadeInBottom"
-                    />
-                    <WorkCard
-                        img="/images/img-5.jpg"
-                        title="Markdown Presenter"
-                        kind="Web App"
-                        effect="fadeInLeft"
-                    />
-                    <WorkCard
-                        img="/images/img-6.jpg"
-                        title="URL Shortener"
-                        kind="Service"
-                        effect="fadeInRight"
-                    />
+                    <Suspense fallback=|| view! { <p class="col-md-12">"Loading projects…"</p> }>
+                        {move || projects.get().map(|res| {
+                            let items: Vec<ProjectView> = res.unwrap_or_default();
+                            items.into_iter().enumerate().map(|(i, p)| {
+                                let effect = match i % 4 {
+                                    0 => "fadeInLeft",
+                                    1 => "fadeInRight",
+                                    2 => "fadeInTop",
+                                    _ => "fadeInBottom",
+                                };
+                                let img = p.image_url.unwrap_or_else(|| format!("/images/img-{}.jpg", (i % 6) + 1));
+                                let bg = format!("background-image: url({});", img);
+                                let kind = p.tech_stack.first().cloned().unwrap_or_else(|| "Project".into());
+                                let link = p.live_url.or(p.github_url).unwrap_or_else(|| "#".into());
+                                view! {
+                                    <div class="col-md-6 animate-box" data-animate-effect=effect>
+                                        <div class="project" style=bg>
+                                            <div class="desc">
+                                                <div class="con">
+                                                    <h3><a href=link.clone()>{p.title}</a></h3>
+                                                    <span>{kind}</span>
+                                                    <p class="icon">
+                                                        <span><a href=link><i class="icon-share3"></i></a></span>
+                                                        <span><a href="#"><i class="icon-eye"></i>" 100"</a></span>
+                                                        <span><a href="#"><i class="icon-heart"></i>" 49"</a></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }).collect_view()
+                        })}
+                    </Suspense>
                 </div>
                 <div class="row">
                     <div class="col-md-12 animate-box">
@@ -644,34 +669,9 @@ fn Work() -> impl IntoView {
 }
 
 #[component]
-fn WorkCard(
-    img: &'static str,
-    title: &'static str,
-    kind: &'static str,
-    effect: &'static str,
-) -> impl IntoView {
-    let bg = format!("background-image: url({});", img);
-    view! {
-        <div class="col-md-6 animate-box" data-animate-effect=effect>
-            <div class="project" style=bg>
-                <div class="desc">
-                    <div class="con">
-                        <h3><a href="#">{title}</a></h3>
-                        <span>{kind}</span>
-                        <p class="icon">
-                            <span><a href="#"><i class="icon-share3"></i></a></span>
-                            <span><a href="#"><i class="icon-eye"></i>" 100"</a></span>
-                            <span><a href="#"><i class="icon-heart"></i>" 49"</a></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-}
+fn BlogSection() -> impl IntoView {
+    let posts = OnceResource::new(async { list_posts().await });
 
-#[component]
-fn Blog() -> impl IntoView {
     view! {
         <section class="colorlib-blog" data-section="blog">
             <div class="colorlib-narrow-content">
@@ -685,33 +685,35 @@ fn Blog() -> impl IntoView {
                     </div>
                 </div>
                 <div class="row">
-                    <BlogEntry
-                        img="/images/blog-1.jpg"
-                        date="May 15, 2026"
-                        category="Rust"
-                        comments="4"
-                        title="Why I chose Rust + Leptos for my portfolio"
-                        body="A pragmatic look at the tradeoffs of using a young framework for a personal site."
-                        effect="fadeInLeft"
-                    />
-                    <BlogEntry
-                        img="/images/blog-2.jpg"
-                        date="May 10, 2026"
-                        category="Architecture"
-                        comments="2"
-                        title="Clean architecture in Rust with a Cargo workspace"
-                        body="Splitting a project into domain / application / infrastructure / presentation crates."
-                        effect="fadeInRight"
-                    />
-                    <BlogEntry
-                        img="/images/blog-3.jpg"
-                        date="April 28, 2026"
-                        category="Frontend"
-                        comments="6"
-                        title="Three small TailwindCSS v4 tips"
-                        body="What changed in v4 and the conventions I now follow."
-                        effect="fadeInLeft"
-                    />
+                    <Suspense fallback=|| view! { <p class="col-md-12">"Loading posts…"</p> }>
+                        {move || posts.get().map(|res| {
+                            let items: Vec<PostView> = res.unwrap_or_default();
+                            items.into_iter().enumerate().map(|(i, p)| {
+                                let effect = if i % 2 == 0 { "fadeInLeft" } else { "fadeInRight" };
+                                let img = p.cover_image.unwrap_or_else(|| format!("/images/blog-{}.jpg", (i % 3) + 1));
+                                let date = p.published_at.unwrap_or_else(|| "Draft".into());
+                                let category = p.tags.first().cloned().unwrap_or_else(|| "Notes".into());
+                                view! {
+                                    <div class="col-md-4 col-sm-6 animate-box" data-animate-effect=effect>
+                                        <div class="blog-entry">
+                                            <a href="#" class="blog-img">
+                                                <img src=img class="img-responsive" alt=p.title.clone() />
+                                            </a>
+                                            <div class="desc">
+                                                <span>
+                                                    <small>{date}</small>" | "
+                                                    <small>" "{category}" "</small>" | "
+                                                    <small><i class="icon-bubble3"></i>" 0"</small>
+                                                </span>
+                                                <h3><a href="#">{p.title}</a></h3>
+                                                <p>{p.excerpt}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }).collect_view()
+                        })}
+                    </Suspense>
                 </div>
                 <div class="row">
                     <div class="col-md-12 animate-box">
@@ -728,37 +730,11 @@ fn Blog() -> impl IntoView {
 }
 
 #[component]
-fn BlogEntry(
-    img: &'static str,
-    date: &'static str,
-    category: &'static str,
-    comments: &'static str,
-    title: &'static str,
-    body: &'static str,
-    effect: &'static str,
-) -> impl IntoView {
-    view! {
-        <div class="col-md-4 col-sm-6 animate-box" data-animate-effect=effect>
-            <div class="blog-entry">
-                <a href="#" class="blog-img">
-                    <img src=img class="img-responsive" alt=title />
-                </a>
-                <div class="desc">
-                    <span>
-                        <small>{date}</small>" | "
-                        <small>" "{category}" "</small>" | "
-                        <small><i class="icon-bubble3"></i>" "{comments}</small>
-                    </span>
-                    <h3><a href="#">{title}</a></h3>
-                    <p>{body}</p>
-                </div>
-            </div>
-        </div>
-    }
-}
+fn ContactSection() -> impl IntoView {
+    let submit = ServerAction::<SubmitContactMessage>::new();
+    let submitting = submit.pending();
+    let value = submit.value();
 
-#[component]
-fn Contact() -> impl IntoView {
     view! {
         <section class="colorlib-contact" data-section="contact">
             <div class="colorlib-narrow-content">
@@ -773,10 +749,7 @@ fn Contact() -> impl IntoView {
                 </div>
                 <div class="row">
                     <div class="col-md-5">
-                        <div
-                            class="colorlib-feature colorlib-feature-sm animate-box"
-                            data-animate-effect="fadeInLeft"
-                        >
+                        <div class="colorlib-feature colorlib-feature-sm animate-box" data-animate-effect="fadeInLeft">
                             <div class="colorlib-icon">
                                 <i class="icon-globe-outline"></i>
                             </div>
@@ -784,11 +757,7 @@ fn Contact() -> impl IntoView {
                                 <p><a href="mailto:mdazharcse14@gmail.com">"mdazharcse14@gmail.com"</a></p>
                             </div>
                         </div>
-
-                        <div
-                            class="colorlib-feature colorlib-feature-sm animate-box"
-                            data-animate-effect="fadeInLeft"
-                        >
+                        <div class="colorlib-feature colorlib-feature-sm animate-box" data-animate-effect="fadeInLeft">
                             <div class="colorlib-icon">
                                 <i class="icon-map"></i>
                             </div>
@@ -796,11 +765,7 @@ fn Contact() -> impl IntoView {
                                 <p>"Dhaka, Bangladesh"</p>
                             </div>
                         </div>
-
-                        <div
-                            class="colorlib-feature colorlib-feature-sm animate-box"
-                            data-animate-effect="fadeInLeft"
-                        >
+                        <div class="colorlib-feature colorlib-feature-sm animate-box" data-animate-effect="fadeInLeft">
                             <div class="colorlib-icon">
                                 <i class="icon-phone"></i>
                             </div>
@@ -811,49 +776,41 @@ fn Contact() -> impl IntoView {
                     </div>
                     <div class="col-md-7 col-md-push-1">
                         <div class="row">
-                            <div
-                                class="col-md-10 col-md-offset-1 col-md-pull-1 animate-box"
-                                data-animate-effect="fadeInRight"
-                            >
-                                <form action="">
+                            <div class="col-md-10 col-md-offset-1 col-md-pull-1 animate-box" data-animate-effect="fadeInRight">
+                                <ActionForm action=submit>
                                     <div class="form-group">
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Name"
-                                        />
+                                        <input type="text" name="name" class="form-control" placeholder="Name" required />
                                     </div>
                                     <div class="form-group">
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Email"
-                                        />
+                                        <input type="email" name="email" class="form-control" placeholder="Email" required />
                                     </div>
                                     <div class="form-group">
-                                        <input
-                                            type="text"
-                                            class="form-control"
-                                            placeholder="Subject"
-                                        />
+                                        <input type="text" name="subject" class="form-control" placeholder="Subject" />
                                     </div>
                                     <div class="form-group">
-                                        <textarea
-                                            id="message"
-                                            cols="30"
-                                            rows="7"
-                                            class="form-control"
-                                            placeholder="Message"
-                                        ></textarea>
+                                        <textarea name="body" id="message" cols="30" rows="7" class="form-control" placeholder="Message" required></textarea>
                                     </div>
                                     <div class="form-group">
                                         <input
                                             type="submit"
                                             class="btn btn-primary btn-send-message"
-                                            value="Send Message"
+                                            value=move || if submitting.get() { "Sending…" } else { "Send Message" }
                                         />
                                     </div>
-                                </form>
+                                    {move || match value.get() {
+                                        Some(Ok(())) => view! {
+                                            <p style="color:#2c98f0;font-weight:500;margin-top:1em;">
+                                                "✓ Message sent — thanks! I'll reply within a couple of days."
+                                            </p>
+                                        }.into_any(),
+                                        Some(Err(e)) => view! {
+                                            <p style="color:#c0392b;font-weight:500;margin-top:1em;">
+                                                {format!("Couldn't send: {}", e)}
+                                            </p>
+                                        }.into_any(),
+                                        None => view! {}.into_any(),
+                                    }}
+                                </ActionForm>
                             </div>
                         </div>
                     </div>

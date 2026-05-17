@@ -13,4 +13,7 @@ pub enum DomainError {
 
     #[error("unauthorized")]
     Unauthorized,
+
+    #[error("internal: {0}")]
+    Internal(String),
 }

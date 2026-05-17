@@ -1,2 +1,7 @@
-// Leptos #[server] functions will live here in Phase 3.
-// Each calls into an application use-case via the composition root.
+//! Leptos server functions — boundary between client UI and server use-cases.
+
+pub mod contact;
+pub mod posts;
+pub mod profile;
+pub mod projects;
+pub mod skills;

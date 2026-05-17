@@ -1,1 +1,3 @@
-// Use-cases for contact form submission will live here (Phase 3).
+pub mod submit_message;
+
+pub use submit_message::SubmitMessage;
