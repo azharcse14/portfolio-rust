@@ -5,59 +5,54 @@ use leptos_router::{
     path,
 };
 
-use crate::routes::public::{
-    about::AboutPage,
-    blog::BlogPage,
-    blog_detail::BlogDetailPage,
-    contact::ContactPage,
-    home::HomePage,
-    not_found::NotFoundPage,
-    project_detail::ProjectDetailPage,
-    projects::ProjectsPage,
-};
-
-/// Inline script run before any rendering. Applies stored theme preference
-/// (or system default) so there is no flash of unstyled content on first paint.
-const THEME_BOOT_SCRIPT: &str = r#"
-(function() {
-  try {
-    var stored = localStorage.getItem('theme');
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var dark = stored ? stored === 'dark' : prefersDark;
-    if (dark) document.documentElement.classList.add('dark');
-    function toggle() {
-      var root = document.documentElement;
-      var isDark = root.classList.toggle('dark');
-      try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch(e) {}
-    }
-    window.__toggleTheme = toggle;
-    document.addEventListener('click', function(e) {
-      var target = e.target;
-      while (target && target !== document) {
-        if (target.id === 'theme-toggle') { toggle(); return; }
-        target = target.parentNode;
-      }
-    });
-  } catch (e) {}
-})();
-"#;
+use crate::routes::public::{home::HomePage, not_found::NotFoundPage};
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
         <!DOCTYPE html>
-        <html lang="en" class="scroll-smooth">
+        <html lang="en">
             <head>
                 <meta charset="utf-8" />
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-                <script>{THEME_BOOT_SCRIPT}</script>
+                <link rel="shortcut icon" href="/favicon.svg" />
+
+                // Google Fonts — Quicksand + Playfair Display (as the legacy template uses)
+                <link
+                    href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700"
+                    rel="stylesheet"
+                />
+                <link
+                    href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700"
+                    rel="stylesheet"
+                />
+
+                // Legacy template stylesheets
+                <link rel="stylesheet" href="/css/animate.css" />
+                <link rel="stylesheet" href="/css/icomoon.css" />
+                <link rel="stylesheet" href="/css/bootstrap.css" />
+                <link rel="stylesheet" href="/css/flexslider.css" />
+                <link rel="stylesheet" href="/css/owl.carousel.min.css" />
+                <link rel="stylesheet" href="/css/owl.theme.default.min.css" />
+                <link rel="stylesheet" href="/css/style.css" />
+
                 <AutoReload options=options.clone() />
                 <HydrationScripts options=options.clone() />
                 <HashedStylesheet options id="leptos" />
                 <MetaTags />
             </head>
-            <body class="bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+            <body>
                 <App />
+
+                // Legacy template JS bundle — load at end of body to mimic original.
+                <script src="/js/jquery.min.js"></script>
+                <script src="/js/jquery.easing.1.3.js"></script>
+                <script src="/js/bootstrap.min.js"></script>
+                <script src="/js/jquery.waypoints.min.js"></script>
+                <script src="/js/jquery.flexslider-min.js"></script>
+                <script src="/js/owl.carousel.min.js"></script>
+                <script src="/js/jquery.countTo.js"></script>
+                <script src="/js/main.js"></script>
             </body>
         </html>
     }
@@ -69,17 +64,11 @@ pub fn App() -> impl IntoView {
 
     view! {
         <Title text="Azharul Islam — Portfolio" />
-        <Meta name="description" content="Developer portfolio built with Rust + Leptos." />
+        <Meta name="description" content="Developer portfolio." />
 
         <Router>
             <Routes fallback=NotFoundPage>
                 <Route path=path!("") view=HomePage />
-                <Route path=path!("about") view=AboutPage />
-                <Route path=path!("projects") view=ProjectsPage />
-                <Route path=path!("projects/:slug") view=ProjectDetailPage />
-                <Route path=path!("blog") view=BlogPage />
-                <Route path=path!("blog/:slug") view=BlogDetailPage />
-                <Route path=path!("contact") view=ContactPage />
             </Routes>
         </Router>
     }

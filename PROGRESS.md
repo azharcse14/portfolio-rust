@@ -168,6 +168,7 @@
 
 প্রতিটা significant change এখানে এক লাইনে লেখো (latest উপরে)।
 
+- **2026-05-18** — Re-skinned to match Jackson legacy template (single-page with sidebar nav, all sections ported, legacy CSS/JS loaded) ✅
 - **2026-05-18** — Phase 2 complete: 8 routes, dark mode, markdown blog, 404 SEO ✅
 - **2026-05-18** — Phase 1 complete: workspace + 4 crates + Leptos SSR scaffold + Tailwind + CI ✅
 - **2026-05-18** — Repo + plan + progress tracker setup ✅
