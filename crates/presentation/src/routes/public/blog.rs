@@ -1,15 +1,25 @@
 use leptos::prelude::*;
+use leptos_meta::Title;
 
+use crate::components::{BlogCard, SectionHeading};
+use crate::data::POSTS;
 use crate::layouts::PublicLayout;
 
 #[component]
 pub fn BlogPage() -> impl IntoView {
     view! {
+        <Title text="Blog — Azharul Islam" />
         <PublicLayout>
-            <h1 class="text-3xl font-bold">"Blog"</h1>
-            <p class="mt-4 text-slate-600 dark:text-slate-300">
-                "Blog posts will appear here once Phase 3 lands."
-            </p>
+            <section class="py-12">
+                <SectionHeading
+                    eyebrow="Writing"
+                    title="Blog"
+                    subtitle="Notes on Rust, frontend, architecture, and whatever I've been learning lately."
+                />
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    {POSTS.iter().map(|p| view! { <BlogCard post=p /> }).collect_view()}
+                </div>
+            </section>
         </PublicLayout>
     }
 }

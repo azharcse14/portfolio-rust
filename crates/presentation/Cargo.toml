@@ -11,14 +11,15 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 domain = { workspace = true }
 application = { workspace = true }
-infrastructure = { workspace = true }
 
 leptos = { version = "0.7" }
 leptos_router = { version = "0.7" }
 leptos_meta = { version = "0.7" }
 serde = { workspace = true }
+pulldown-cmark = { version = "0.12", default-features = false, features = ["html"] }
 
 # ssr-only deps (gated)
+infrastructure = { workspace = true, optional = true }
 leptos_axum = { version = "0.7", optional = true }
 axum = { version = "0.7", optional = true }
 tokio = { workspace = true, optional = true }
@@ -31,6 +32,10 @@ tracing-subscriber = { workspace = true, optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }
 wasm-bindgen = { version = "=0.2.99", optional = true }
 
+# Browser-side randomness backend for uuid::v4 / getrandom.
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+
 [features]
 hydrate = [
     "leptos/hydrate",
@@ -38,6 +43,7 @@ hydrate = [
     "dep:wasm-bindgen",
 ]
 ssr = [
+    "dep:infrastructure",
     "dep:axum",
     "dep:tokio",
     "dep:tower",
@@ -51,7 +57,7 @@ ssr = [
 ]
 
 [[bin]]
-name = "portfolio-server"
+name = "presentation"
 path = "src/main.rs"
 required-features = ["ssr"]
 

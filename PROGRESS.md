@@ -8,14 +8,14 @@
 ## 🎯 সামগ্রিক অগ্রগতি (Overall)
 
 ```
-[███░░░░░░░░░░░░░░░░░] 17% complete  (1/6 phases)
+[██████░░░░░░░░░░░░░░] 33% complete  (2/6 phases)
 ```
 
 | Phase | Status | শুরু | শেষ | নোট |
 |---|---|---|---|---|
 | 0. Setup & Planning | 🟢 Done | 2026-05-18 | 2026-05-18 | Repo + plan ready |
 | 1. Foundation (workspace, scaffold, Tailwind) | 🟢 Done | 2026-05-18 | 2026-05-18 | 4-crate workspace builds clean |
-| 2. Public Pages UI | ⚪ Not started | — | — | — |
+| 2. Public Pages UI | 🟢 Done | 2026-05-18 | 2026-05-18 | 8 routes live, dark mode, markdown blog |
 | 3. Database + Server Functions | ⚪ Not started | — | — | — |
 | 4. Auth + Dashboard | ⚪ Not started | — | — | — |
 | 5. Polish + SEO | ⚪ Not started | — | — | — |
@@ -27,8 +27,8 @@
 
 ## 🚀 বর্তমান ফোকাস (Current Focus)
 
-**Phase:** Phase 2 — Public Pages UI
-**Task:** Hero, about, projects, blog, contact page designs (hardcoded content)
+**Phase:** Phase 3 — Database + Server Functions
+**Task:** SQLx + Postgres setup, migrations, repository implementations, swap hardcoded data for DB queries
 **Blocker:** কোনো blocker নেই
 
 ---
@@ -168,6 +168,7 @@
 
 প্রতিটা significant change এখানে এক লাইনে লেখো (latest উপরে)।
 
+- **2026-05-18** — Phase 2 complete: 8 routes, dark mode, markdown blog, 404 SEO ✅
 - **2026-05-18** — Phase 1 complete: workspace + 4 crates + Leptos SSR scaffold + Tailwind + CI ✅
 - **2026-05-18** — Repo + plan + progress tracker setup ✅
 

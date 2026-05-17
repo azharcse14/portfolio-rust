@@ -3,6 +3,7 @@
 
 pub mod app;
 pub mod components;
+pub mod data;
 pub mod layouts;
 pub mod routes;
 pub mod server_fns;

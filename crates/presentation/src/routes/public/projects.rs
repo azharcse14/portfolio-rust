@@ -1,15 +1,25 @@
 use leptos::prelude::*;
+use leptos_meta::Title;
 
+use crate::components::{ProjectCard, SectionHeading};
+use crate::data::PROJECTS;
 use crate::layouts::PublicLayout;
 
 #[component]
 pub fn ProjectsPage() -> impl IntoView {
     view! {
+        <Title text="Projects — Azharul Islam" />
         <PublicLayout>
-            <h1 class="text-3xl font-bold">"Projects"</h1>
-            <p class="mt-4 text-slate-600 dark:text-slate-300">
-                "Project list will be loaded from the DB in Phase 3."
-            </p>
+            <section class="py-12">
+                <SectionHeading
+                    eyebrow="Work"
+                    title="All projects"
+                    subtitle="The full archive — featured work, side projects, and occasional experiments."
+                />
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {PROJECTS.iter().map(|p| view! { <ProjectCard project=p /> }).collect_view()}
+                </div>
+            </section>
         </PublicLayout>
     }
 }
