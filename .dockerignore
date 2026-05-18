@@ -1,0 +1,16 @@
+target/
+target/site/
+target/front/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.git/
+.github/
+.idea/
+.DS_Store
+node_modules/
+legacy/
+PROJECT_PLAN.md
+PROGRESS.md
+README.md
