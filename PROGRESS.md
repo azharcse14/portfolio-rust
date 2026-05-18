@@ -8,7 +8,7 @@
 ## 🎯 সামগ্রিক অগ্রগতি (Overall)
 
 ```
-[████████████████░░░░] 83% complete  (5/6 phases)
+[████████████████████] 100% complete  (6/6 phases) 🎉
 ```
 
 | Phase | Status | শুরু | শেষ | নোট |
@@ -19,7 +19,7 @@
 | 3. Database + Server Functions | 🟢 Done | 2026-05-18 | 2026-05-18 | SQLite + SQLx, DI wired, public site DB-driven |
 | 4. Auth + Dashboard | 🟢 Done | 2026-05-18 | 2026-05-18 | JWT auth, full admin CRUD, markdown editor |
 | 5. Polish + SEO | 🟢 Done | 2026-05-19 | 2026-05-19 | OG/Twitter/JSON-LD, sitemap, robots, cache, compression |
-| 6. Deployment | ⚪ Not started | — | — | — |
+| 6. Deployment | 🟢 Done | 2026-05-19 | 2026-05-19 | Multi-stage Dockerfile + fly.toml + CD workflow + deploy README |
 
 **Status icons:** 🟢 Done · 🟡 In progress · 🔴 Blocked · ⚪ Not started
 
@@ -27,8 +27,16 @@
 
 ## 🚀 বর্তমান ফোকাস (Current Focus)
 
-**Phase:** Phase 5 — Polish + SEO
-**Task:** Dynamic meta tags, sitemap, OG images, accessibility, performance, Lighthouse ≥ 90
+**Phase:** ✅ All phases done — project is ship-ready.
+
+**Next steps for the user (deploy):**
+1. `flyctl auth signup` → `flyctl launch --no-deploy --copy-config`
+2. `flyctl volumes create portfolio_data --region sin --size 1`
+3. `flyctl secrets set JWT_SECRET=$(openssl rand -hex 64)`
+4. `flyctl deploy`
+5. Visit `https://<app>.fly.dev/admin/setup` to bootstrap admin
+6. (Optional) Add `FLY_API_TOKEN` GitHub secret to enable auto-deploy on push
+
 **Blocker:** কোনো blocker নেই
 
 ---
@@ -168,6 +176,7 @@
 
 প্রতিটা significant change এখানে এক লাইনে লেখো (latest উপরে)।
 
+- **2026-05-19** — Phase 6 complete: Dockerfile (multi-stage cargo-chef + cargo-leptos), fly.toml with SQLite volume, GitHub Actions deploy workflow, comprehensive README, .env.example ✅
 - **2026-05-19** — Phase 5 complete: SEO (OG + Twitter + JSON-LD Person schema), dynamic sitemap.xml, robots.txt, admin noindex, gzip+br compression, immutable cache for static assets, skip-to-content link, icon aria-labels, image lazy loading ✅
 - **2026-05-18** — Phase 4 complete: JWT auth + argon2, 16 admin CRUD server fns w/ auth guard, dashboard layout, full editor pages (profile / projects / posts w/ markdown preview / skills / messages inbox) ✅
 - **2026-05-18** — Phase 3 complete: SQLite + SQLx, 6 SQLite repos, 7 use-cases, 5 server fns, DI via Leptos context, public site fully DB-driven, contact form submits ✅
