@@ -1,14 +1,14 @@
 # 📊 প্রজেক্ট প্রোগ্রেস ট্র্যাকার
 
 > **পূর্ণ স্পেক:** [PROJECT_PLAN.md](./PROJECT_PLAN.md)
-> **শেষ আপডেট:** 2026-05-18
+> **শেষ আপডেট:** 2026-05-19
 
 ---
 
 ## 🎯 সামগ্রিক অগ্রগতি (Overall)
 
 ```
-[█████████████░░░░░░░] 67% complete  (4/6 phases)
+[████████████████░░░░] 83% complete  (5/6 phases)
 ```
 
 | Phase | Status | শুরু | শেষ | নোট |
@@ -18,9 +18,7 @@
 | 2. Public Pages UI | 🟢 Done | 2026-05-18 | 2026-05-18 | Jackson template hubhu replicated |
 | 3. Database + Server Functions | 🟢 Done | 2026-05-18 | 2026-05-18 | SQLite + SQLx, DI wired, public site DB-driven |
 | 4. Auth + Dashboard | 🟢 Done | 2026-05-18 | 2026-05-18 | JWT auth, full admin CRUD, markdown editor |
-| 3. Database + Server Functions | ⚪ Not started | — | — | — |
-| 4. Auth + Dashboard | ⚪ Not started | — | — | — |
-| 5. Polish + SEO | ⚪ Not started | — | — | — |
+| 5. Polish + SEO | 🟢 Done | 2026-05-19 | 2026-05-19 | OG/Twitter/JSON-LD, sitemap, robots, cache, compression |
 | 6. Deployment | ⚪ Not started | — | — | — |
 
 **Status icons:** 🟢 Done · 🟡 In progress · 🔴 Blocked · ⚪ Not started
@@ -170,6 +168,7 @@
 
 প্রতিটা significant change এখানে এক লাইনে লেখো (latest উপরে)।
 
+- **2026-05-19** — Phase 5 complete: SEO (OG + Twitter + JSON-LD Person schema), dynamic sitemap.xml, robots.txt, admin noindex, gzip+br compression, immutable cache for static assets, skip-to-content link, icon aria-labels, image lazy loading ✅
 - **2026-05-18** — Phase 4 complete: JWT auth + argon2, 16 admin CRUD server fns w/ auth guard, dashboard layout, full editor pages (profile / projects / posts w/ markdown preview / skills / messages inbox) ✅
 - **2026-05-18** — Phase 3 complete: SQLite + SQLx, 6 SQLite repos, 7 use-cases, 5 server fns, DI via Leptos context, public site fully DB-driven, contact form submits ✅
 - **2026-05-18** — Re-skinned to match Jackson legacy template (single-page with sidebar nav, all sections ported, legacy CSS/JS loaded) ✅
