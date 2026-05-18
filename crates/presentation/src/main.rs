@@ -23,7 +23,7 @@ async fn main() {
     let pool = connect_and_migrate(&cfg.database_url)
         .await
         .expect("db connect + migrate");
-    let state = AppState::build(pool);
+    let state = AppState::build(pool, &cfg);
 
     let conf = get_configuration(None).expect("failed to load Leptos config");
     let leptos_options = conf.leptos_options;

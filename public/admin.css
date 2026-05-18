@@ -1,0 +1,432 @@
+/* ============================================================
+   Admin dashboard styles — scoped under #admin-app so they
+   don't leak into the public Jackson template at /.
+   All Bootstrap defaults are explicitly overridden inside this
+   container; we treat #admin-app as its own little design system.
+   ============================================================ */
+
+#admin-app {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1f2937;
+    background: #f3f4f6;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+#admin-app *,
+#admin-app *::before,
+#admin-app *::after {
+    box-sizing: border-box;
+}
+
+#admin-app a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+#admin-app a:hover {
+    text-decoration: underline;
+}
+
+#admin-app h1, #admin-app h2, #admin-app h3 {
+    margin: 0 0 0.5em 0;
+    color: #0f172a;
+    font-weight: 600;
+}
+#admin-app h1 { font-size: 22px; }
+#admin-app h2 { font-size: 18px; }
+#admin-app h3 { font-size: 16px; }
+
+/* Layout */
+.admin-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.admin-sidebar {
+    width: 240px;
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 24px 0;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.admin-sidebar .brand {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #1e293b;
+}
+
+.admin-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+}
+
+.admin-sidebar nav a {
+    color: #cbd5e1;
+    padding: 10px 24px;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    transition: background 0.15s;
+}
+
+.admin-sidebar nav a:hover {
+    background: #1e293b;
+    color: #fff;
+    text-decoration: none;
+}
+
+.admin-sidebar nav a.active {
+    background: #1e293b;
+    color: #fff;
+    border-left-color: #3b82f6;
+}
+
+.admin-sidebar .signout {
+    margin-top: auto;
+    padding: 16px 24px;
+    border-top: 1px solid #1e293b;
+    font-size: 13px;
+}
+
+.admin-content {
+    margin-left: 240px;
+    flex: 1;
+    padding: 32px 40px;
+    max-width: 1100px;
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.admin-header h1 {
+    margin: 0;
+}
+
+/* Buttons */
+#admin-app .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    text-decoration: none;
+    background: #fff;
+    color: #374151;
+    border-color: #d1d5db;
+    line-height: 1.4;
+}
+
+#admin-app .btn:hover {
+    background: #f9fafb;
+    text-decoration: none;
+}
+
+#admin-app .btn-primary {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+}
+
+#admin-app .btn-primary:hover {
+    background: #1d4ed8;
+    color: #fff;
+}
+
+#admin-app .btn-danger {
+    background: #fff;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+#admin-app .btn-danger:hover {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+#admin-app .btn-sm {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+/* Forms */
+#admin-app .form-group {
+    margin-bottom: 16px;
+}
+
+#admin-app .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+
+#admin-app .form-group input[type="text"],
+#admin-app .form-group input[type="email"],
+#admin-app .form-group input[type="password"],
+#admin-app .form-group input[type="number"],
+#admin-app .form-group input[type="url"],
+#admin-app .form-group textarea,
+#admin-app .form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #1f2937;
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+#admin-app .form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: ui-monospace, Menlo, Monaco, "SF Mono", monospace;
+    font-size: 13px;
+}
+
+#admin-app .form-group input:focus,
+#admin-app .form-group textarea:focus,
+#admin-app .form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+#admin-app .form-row {
+    display: flex;
+    gap: 16px;
+}
+#admin-app .form-row .form-group { flex: 1; }
+
+#admin-app .form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+#admin-app .form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+#admin-app .form-help {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Cards */
+#admin-app .card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+}
+
+#admin-app .card h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Stats grid (dashboard) */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.stat {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+}
+.stat .label { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+.stat .value { font-size: 28px; font-weight: 700; color: #0f172a; margin-top: 4px; }
+
+/* Tables */
+#admin-app table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#admin-app th {
+    text-align: left;
+    padding: 10px 16px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+#admin-app td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+#admin-app tr:last-child td {
+    border-bottom: none;
+}
+
+#admin-app .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 999px;
+    background: #e5e7eb;
+    color: #374151;
+}
+
+#admin-app .badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+#admin-app .badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Auth (login / setup) */
+.auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 32px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+}
+
+.auth-card h1 {
+    margin: 0 0 6px;
+    font-size: 22px;
+}
+
+.auth-card .hint {
+    color: #6b7280;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.alert {
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+.alert-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+}
+.alert-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+}
+
+/* Markdown editor */
+.md-editor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.md-preview {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 12px 16px;
+    overflow-y: auto;
+    max-height: 600px;
+    min-height: 120px;
+}
+.md-preview h1 { font-size: 24px; }
+.md-preview h2 { font-size: 20px; }
+.md-preview pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 13px;
+}
+.md-preview code {
+    background: #f3f4f6;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+.md-preview pre code {
+    background: transparent;
+    color: inherit;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 60px;
+    }
+    .admin-sidebar .brand,
+    .admin-sidebar nav a {
+        padding-left: 12px;
+        padding-right: 12px;
+        font-size: 0;
+    }
+    .admin-content {
+        margin-left: 60px;
+        padding: 16px;
+    }
+    .md-editor {
+        grid-template-columns: 1fr;
+    }
+}

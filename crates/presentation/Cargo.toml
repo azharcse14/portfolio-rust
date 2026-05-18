@@ -11,6 +11,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 domain = { workspace = true }
 application = { workspace = true }
+uuid = { workspace = true }
 
 leptos = { version = "0.7" }
 leptos_router = { version = "0.7" }
