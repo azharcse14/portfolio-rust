@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_meta::Title;
+use leptos_meta::{Meta, Title};
 use leptos_router::hooks::use_navigate;
 
 use crate::server_fns::auth::{admin_setup_open, Login, RegisterAdmin};
@@ -20,6 +20,7 @@ pub fn LoginPage() -> impl IntoView {
 
     view! {
         <Title text="Admin · Sign In" />
+        <Meta name="robots" content="noindex, nofollow" />
         <div id="admin-app">
             <div class="auth-wrap">
                 <div class="auth-card">
@@ -78,6 +79,7 @@ pub fn SetupPage() -> impl IntoView {
 
     view! {
         <Title text="Admin · Setup" />
+        <Meta name="robots" content="noindex, nofollow" />
         <div id="admin-app">
             <div class="auth-wrap">
                 <div class="auth-card">

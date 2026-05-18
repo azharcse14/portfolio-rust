@@ -46,7 +46,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <meta charset="utf-8" />
                 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <link rel="shortcut icon" href="/favicon.svg" />
+                <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+                <link rel="alternate icon" href="/favicon.svg" />
 
                 <link
                     href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700"
@@ -97,8 +98,33 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Title text="Azharul Islam — Portfolio" />
-        <Meta name="description" content="Developer portfolio." />
+        <Title text="Azharul Islam — Full Stack Developer" />
+        <Meta
+            name="description"
+            content="Full stack developer building reliable software with Rust, TypeScript, and clean architecture. Open to freelance work."
+        />
+        <Meta name="author" content="Azharul Islam" />
+        <Meta name="theme-color" content="#0f172a" />
+
+        // Open Graph
+        <Meta property="og:type" content="website" />
+        <Meta property="og:title" content="Azharul Islam — Full Stack Developer" />
+        <Meta
+            property="og:description"
+            content="Full stack developer building reliable software with Rust, TypeScript, and clean architecture."
+        />
+        <Meta property="og:image" content="/images/about.jpg" />
+        <Meta property="og:site_name" content="Azharul Islam" />
+        <Meta property="og:locale" content="en_US" />
+
+        // Twitter / X
+        <Meta name="twitter:card" content="summary_large_image" />
+        <Meta name="twitter:title" content="Azharul Islam — Full Stack Developer" />
+        <Meta
+            name="twitter:description"
+            content="Full stack developer building reliable software with Rust, TypeScript, and clean architecture."
+        />
+        <Meta name="twitter:image" content="/images/about.jpg" />
 
         <Router>
             <Routes fallback=NotFoundPage>

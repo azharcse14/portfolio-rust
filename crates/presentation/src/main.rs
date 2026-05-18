@@ -1,16 +1,27 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use axum::Router;
+    use std::time::Duration;
+
+    use axum::{
+        http::{header, HeaderValue},
+        Router,
+    };
     use infrastructure::{db::connect_and_migrate, AppConfig};
     use leptos::config::get_configuration;
     use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use presentation::{
         app::{shell, App},
+        seo::sitemap_xml,
         state::AppState,
     };
-    use tower_http::services::ServeDir;
+    use tower::ServiceBuilder;
+    use tower_http::{
+        compression::CompressionLayer,
+        services::ServeDir,
+        set_header::SetResponseHeaderLayer,
+    };
     use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
     tracing_subscriber::registry()
@@ -30,7 +41,38 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
+    // Long-lived cache for static asset directories (cargo-leptos hashes /pkg
+    // bundle names, and our /images, /css, /js, /fonts are versioned by content).
+    let one_year = Duration::from_secs(60 * 60 * 24 * 365);
+    let immutable_assets = SetResponseHeaderLayer::if_not_present(
+        header::CACHE_CONTROL,
+        HeaderValue::from_str(&format!(
+            "public, max-age={}, immutable",
+            one_year.as_secs()
+        ))
+        .unwrap(),
+    );
+
+    let static_serve = ServeDir::new(&*leptos_options.site_root)
+        .precompressed_gzip()
+        .precompressed_br();
+    // Cache-Control: only applied to the static fallback so HTML stays fresh.
+    let cached_static = ServiceBuilder::new()
+        .layer(immutable_assets)
+        .service(static_serve);
+
     let app = Router::new()
+        // SEO route — must be before the Leptos catch-all
+        .route(
+            "/sitemap.xml",
+            axum::routing::get({
+                let state = state.clone();
+                move || {
+                    let state = state.clone();
+                    async move { sitemap_xml(state).await }
+                }
+            }),
+        )
         .leptos_routes_with_context(
             &leptos_options,
             routes,
@@ -43,7 +85,8 @@ async fn main() {
                 move || shell(opts.clone())
             },
         )
-        .fallback_service(ServeDir::new(&*leptos_options.site_root))
+        .fallback_service(cached_static)
+        .layer(CompressionLayer::new())
         .with_state(leptos_options);
 
     tracing::info!("listening on http://{addr}");

@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_meta::Title;
+use leptos_meta::{Link, Meta, Title};
 use leptos::form::ActionForm;
 
 use crate::server_fns::{
@@ -10,10 +10,35 @@ use crate::server_fns::{
     skills::{list_skills, SkillView},
 };
 
+const JSON_LD: &str = r#"{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Azharul Islam",
+  "jobTitle": "Full Stack Developer",
+  "description": "Full stack developer building reliable software with Rust, TypeScript, and clean architecture.",
+  "image": "/images/about.jpg",
+  "knowsAbout": ["Rust", "Leptos", "Axum", "TypeScript", "Postgres", "SQLite", "Clean Architecture"],
+  "sameAs": [
+    "https://github.com/azharcse14"
+  ]
+}"#;
+
 #[component]
 pub fn HomePage() -> impl IntoView {
     view! {
-        <Title text="Azharul Islam — Portfolio" />
+        <Title text="Azharul Islam — Full Stack Developer Portfolio" />
+        <Meta name="keywords" content="Azharul Islam, Full Stack Developer, Rust, Leptos, Axum, TypeScript, Portfolio, Bangladesh" />
+        <Link rel="canonical" href="/" />
+        <script type="application/ld+json">{JSON_LD}</script>
+        <a
+            href="#colorlib-main"
+            class="skip-link"
+            style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;"
+            onfocus="this.style.cssText='position:fixed;left:1em;top:1em;background:#0f172a;color:#fff;padding:8px 12px;border-radius:4px;z-index:9999;'"
+            onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;'"
+        >
+            "Skip to content"
+        </a>
         <div id="colorlib-page">
             <div class="container-wrap">
                 <a
@@ -23,7 +48,8 @@ pub fn HomePage() -> impl IntoView {
                     data-target="#navbar"
                     aria-expanded="false"
                     aria-controls="navbar"
-                ><i></i></a>
+                    aria-label="Toggle navigation menu"
+                ><i aria-hidden="true"></i></a>
 
                 <Aside />
 
@@ -91,10 +117,10 @@ fn Aside() -> impl IntoView {
                     " by Azharul Islam"
                 </small></p>
                 <ul>
-                    <li><a href="#"><i class="icon-facebook2"></i></a></li>
-                    <li><a href="#"><i class="icon-twitter2"></i></a></li>
-                    <li><a href="#"><i class="icon-instagram"></i></a></li>
-                    <li><a href="https://github.com/azharcse14"><i class="icon-linkedin2"></i></a></li>
+                    <li><a href="#" aria-label="Facebook"><i class="icon-facebook2" aria-hidden="true"></i></a></li>
+                    <li><a href="#" aria-label="Twitter"><i class="icon-twitter2" aria-hidden="true"></i></a></li>
+                    <li><a href="#" aria-label="Instagram"><i class="icon-instagram" aria-hidden="true"></i></a></li>
+                    <li><a href="https://github.com/azharcse14" aria-label="GitHub" rel="noopener noreferrer"><i class="icon-linkedin2" aria-hidden="true"></i></a></li>
                 </ul>
             </div>
         </aside>

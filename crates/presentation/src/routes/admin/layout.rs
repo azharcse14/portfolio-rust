@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_meta::Meta;
 use leptos_router::components::A;
 use leptos_router::hooks::{use_location, use_navigate};
 
@@ -26,6 +27,7 @@ pub fn AdminShell(children: Children) -> impl IntoView {
     };
 
     view! {
+        <Meta name="robots" content="noindex, nofollow" />
         <div id="admin-app">
             <div class="admin-shell">
                 <aside class="admin-sidebar">

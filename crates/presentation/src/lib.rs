@@ -3,6 +3,7 @@
 
 pub mod app;
 pub mod routes;
+pub mod seo;
 pub mod server_fns;
 pub mod state;
 
